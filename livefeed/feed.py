@@ -34,18 +34,18 @@ def clean_photo_dir(tmp_path, max_frames):
 def start_stream(cam_id = 0, tmp_path="./tmp", max_frames=20):
     create_tmp(tmp_path)
     cap = cv2.VideoCapture(0)
+    close = False
     if not cap.isOpened():
         raise IOError("Cannot open webcam")
-    while True:
+    while not close:
         ret, frame = cap.read()
         frame = cv2.resize(frame, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
         cv2.imshow('Input', frame)
         store_photo(frame, tmp_path)
         clean_photo_dir(tmp_path, max_frames)
-
         c = cv2.waitKey(1)
-        if c == 27:
-            break
+        if c == 27 or (c & 0xFF == ord('q')):
+            close = True
     cap.release()
     cv2.destroyAllWindows()
 
