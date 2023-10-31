@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
     print("Generating dataset from path...")
     X, y = gen_dataset(args.dataset_path, args.hit_keyword, args.miss_keyword)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=args.train_split)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=args.train_split, random_state=42)
     expected_size = utils.get_max_img_size(X)
 
     net = HitNet(img_size=expected_size)
@@ -88,7 +88,6 @@ if __name__ == '__main__':
 
     torch.cuda.empty_cache()
     torch.save(net.state_dict(), args.output)
-
 
     print("Testing model...")
     accuracy = utils.accuracy(X_test, y_test, net, expected_size, device, verbose=False)
