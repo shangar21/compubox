@@ -171,3 +171,5 @@ cython_debug/
 *.pt
 
 */runs/
+
+*.pth
