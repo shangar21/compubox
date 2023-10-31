@@ -58,7 +58,7 @@ def decay_lr(lr, epoch):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog="hitnet train cli", description="CLI for training hitnet")
     parser.add_argument('--dataset-path', '-d', nargs="?", default="./punch_imgs", type=str)
-    parser.add_argument('--hit-keyword', nargs="?", default="landed", type=str)
+    parser.add_argument('--hit-keyword', nargs="?", default="land", type=str)
     parser.add_argument('--miss-keyword', nargs="?", default="miss", type=str)
     parser.add_argument('--train-split', nargs="?", default=0.8, type=float)
     parser.add_argument('--learning_rate', nargs="?", default=0.001, type=float)
