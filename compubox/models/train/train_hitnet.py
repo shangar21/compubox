@@ -65,7 +65,7 @@ if __name__ == '__main__':
     parser.add_argument('--momentum', nargs="?", default=0.9, type=float)
     parser.add_argument('--epochs', nargs="?", default=100, type=int)
     parser.add_argument('--batch_size', nargs="?", default=5, type=int)
-    parser.add_argument('--loss-every', nargs="?", default=20, type=int)
+    parser.add_argument('--loss-every', nargs="?", default=1, type=int)
     parser.add_argument('--output', '-o', nargs="?", default="./model.pth", type=str)
     args = parser.parse_args()
 
