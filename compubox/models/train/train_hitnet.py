@@ -52,6 +52,9 @@ def resize_with_padding(img, expected_size):
     padding = (pad_h, d_h - pad_h, pad_w, d_w - pad_w)
     return torch.nn.functional.pad(img, padding)
 
+def decay_lr(lr, epoch):
+    return lr / epoch
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog="hitnet train cli", description="CLI for training hitnet")
     parser.add_argument('--dataset-path', '-d', nargs="?", default="./punch_imgs", type=str)
@@ -62,35 +65,55 @@ if __name__ == '__main__':
     parser.add_argument('--momentum', nargs="?", default=0.9, type=float)
     parser.add_argument('--epochs', nargs="?", default=100, type=int)
     parser.add_argument('--batch_size', nargs="?", default=5, type=int)
+    parser.add_argument('--loss-every', nargs="?", default=20, type=int)
+    parser.add_argument('--output', '-o', nargs="?", default="./model.pth", type=str)
     args = parser.parse_args()
+
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
     print("Generating dataset from path...")
     X, y = gen_dataset(args.dataset_path, args.hit_keyword, args.miss_keyword)
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=args.train_split)
     expected_size = get_max_img_size(X)
 
+    print(sum(y_train)/len(y_train))
+
     net = HitNet(img_size=expected_size)
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(net.parameters(), lr=args.learning_rate, momentum=args.momentum)
+    net.to(device)
+    criterion = nn.BCELoss()
+
+    running_loss = 0.0
+
+    torch.cuda.empty_cache()
 
     for epoch in range(args.epochs):
-        running_loss = 0.0
+        optimizer = optim.Adam(net.parameters(), lr=args.learning_rate)#, momentum=args.momentum)
         print(f"Running epoch {epoch + 1}/{args.epochs}")
         for i in tqdm(range(len(X_train))):
             img = X_train[i]
-            t = torch.tensor([y_train[i]])
             img = resize_with_padding(img, expected_size)
-            output = net(img)
+            optimizer.zero_grad()
+            output = net(img.to(device))
+            t = torch.tensor(y_train[i]).reshape(output.shape).to(torch.float).to(device)
             loss = criterion(output, t)
             loss.backward()
             optimizer.step()
+            running_loss += loss
+        if epoch % args.loss_every == args.loss_every - 1:
+            print(running_loss)
+            running_loss = 0
 
-            running_loss += loss.item()
-
-            if epoch % 20 == 19:
-                print(running_loss)
-                running_loss = 0.0
+    torch.cuda.empty_cache()
+    torch.save(net.state_dict(), args.output)
 
 
+    print("Testing model...")
+    correct = 0
+    for i in tqdm(range(len(X_test))):
+        img = X_test[i]
+        img = resize_with_padding(img, expected_size)
+        output = net(img.to(device))
+        output = 1 if output > 0.5 else 0
+        correct += 1 if output == y_test[i] else 0
 
-
+    print(f"Test accuracy: {correct/len(X_test)}")
