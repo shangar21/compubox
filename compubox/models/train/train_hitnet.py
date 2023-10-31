@@ -23,6 +23,8 @@ from sklearn.model_selection import train_test_split
 
 import json
 
+import utils
+
 def gen_dataset(path, hit, miss):
     X = []
     y = []
@@ -30,30 +32,13 @@ def gen_dataset(path, hit, miss):
     for file in tqdm(os.listdir(path)):
         image = Image.open(f"{path}/{file}")
         image = image.convert('L')
+        #t = [0, 0]
+        #t[0 if hit in file else 1] = 1
         t = 1 if hit in file else 0
         tensor = transformer(image)
         X.append(tensor)
         y.append(t)
     return X, y
-
-def get_max_img_size(imgs):
-    max_size  = [0, 0]
-    for i in imgs:
-        max_size[0] = max(i.shape[1], max_size[0])
-        max_size[1] = max(i.shape[2], max_size[1])
-    json.dump({'img_dim': max_size}, open("img_dim.json", "w+"))
-    return max_size
-
-def resize_with_padding(img, expected_size):
-    d_w = expected_size[0] - img.shape[1]
-    d_h = expected_size[1] - img.shape[2]
-    pad_w = d_w // 2
-    pad_h = d_h // 2
-    padding = (pad_h, d_h - pad_h, pad_w, d_w - pad_w)
-    return torch.nn.functional.pad(img, padding)
-
-def decay_lr(lr, epoch):
-    return lr / epoch
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog="hitnet train cli", description="CLI for training hitnet")
@@ -74,13 +59,11 @@ if __name__ == '__main__':
     print("Generating dataset from path...")
     X, y = gen_dataset(args.dataset_path, args.hit_keyword, args.miss_keyword)
     X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=args.train_split)
-    expected_size = get_max_img_size(X)
-
-    print(sum(y_train)/len(y_train))
+    expected_size = utils.get_max_img_size(X)
 
     net = HitNet(img_size=expected_size)
     net.to(device)
-    criterion = nn.BCELoss()
+    criterion = nn.BCEWithLogitsLoss()
 
     running_loss = 0.0
 
@@ -91,7 +74,7 @@ if __name__ == '__main__':
         print(f"Running epoch {epoch + 1}/{args.epochs}")
         for i in tqdm(range(len(X_train))):
             img = X_train[i]
-            img = resize_with_padding(img, expected_size)
+            img = utils.resize_with_padding(img, expected_size)
             optimizer.zero_grad()
             output = net(img.to(device))
             t = torch.tensor(y_train[i]).reshape(output.shape).to(torch.float).to(device)
@@ -100,7 +83,7 @@ if __name__ == '__main__':
             optimizer.step()
             running_loss += loss
         if epoch % args.loss_every == args.loss_every - 1:
-            print(running_loss)
+            print(f"Loss: {running_loss} \t\t Training accuracy: {utils.accuracy(X_train, y_train, net, expected_size, device, verbose=False)}")
             running_loss = 0
 
     torch.cuda.empty_cache()
@@ -108,12 +91,6 @@ if __name__ == '__main__':
 
 
     print("Testing model...")
-    correct = 0
-    for i in tqdm(range(len(X_test))):
-        img = X_test[i]
-        img = resize_with_padding(img, expected_size)
-        output = net(img.to(device))
-        output = 1 if output > 0.5 else 0
-        correct += 1 if output == y_test[i] else 0
+    accuracy = utils.accuracy(X_test, y_test, net, expected_size, device, verbose=False)
+    print(f"Test accuracy: {accuracy}")
 
-    print(f"Test accuracy: {correct/len(X_test)}")
