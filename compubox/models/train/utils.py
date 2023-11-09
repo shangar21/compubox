@@ -1,6 +1,7 @@
 import json
 import torch.nn.functional
 from tqdm import tqdm
+import cv2
 
 def get_max_img_size(imgs):
     max_size  = [0, 0]
@@ -18,7 +19,6 @@ def resize_with_padding(img, expected_size):
     padding = (pad_h, d_h - pad_h, pad_w, d_w - pad_w)
     return torch.nn.functional.pad(img, padding)
 
-
 def accuracy(X_test, y_test, net, expected_size, device, threshold = lambda x : 1 if x > 0.5 else 0, verbose=True):
     correct = 0
     for i in tqdm(range(len(X_test)), disable=not verbose):
@@ -31,4 +31,19 @@ def accuracy(X_test, y_test, net, expected_size, device, threshold = lambda x : 
         print(correct/len(X_test))
     return correct / len(X_test)
 
+def extract_frames(vid_path, save=''):
+	vid = cv2.VideoCapture(vid_path)
+	images = []
+	count = 0
+	success, image = vid.read()
+	while success:
+		if not save:
+			images.append(image)
+		else:
+			print('saving frame {}...'.format(count))
+			cv2.imwrite(save.format(count), image)
+			print('done saving frame {}...'.format(count))
+		success, image = vid.read()
+		count += 1
+	return images
 

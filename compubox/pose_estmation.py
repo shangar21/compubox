@@ -1,16 +1,26 @@
 from ultralytics import YOLO
-from ultralytics.utils import plotting
+from models.train import utils
+import torch
 
-model = YOLO('~/Downloads/yolov8n-pose.pt')
+def get_model(path):
+    return YOLO(path)
 
-def predict(img_path):
-    results = model.predict(img_path, show=True)
+def predict(model, img):
+    results = model.track(img, show=True)
     return results
 
-def show_result(result):
-    kpts = result.keypoints
-    annotator = plotting.Annotator(result.orig_img)
-    annotator.kpts(kpts.data[0])
+def flatten_results(results):
+    poses = {}
+    for result in results:
+        ids = result.boxes.id
+        for i in range(len(ids)):
+            print(i)
+            poses[ids[i].item()] = poses.get(ids[i].item(), []) + [torch.flatten(result.keypoints.xyn[i])]
+    return poses
 
 if __name__ == '__main__':
-    result = predict('/home/shangar21/Downloads/guy_standing.jpg')
+    model = get_model('yolov8m-pose.pt')
+    results = predict(model, '/home/shangar21/Downloads/roll_vid_1.mp4')
+    flat_res = flatten_results(results)
+    print(flat_res)
+
