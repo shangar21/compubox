@@ -47,3 +47,8 @@ def extract_frames(vid_path, save=''):
 		count += 1
 	return images
 
+def read_model(Net, pth, device='cpu'):
+    model = Net()
+    model.to(device)
+    model.load_state_dict(torch.load(pth))
+    return model
