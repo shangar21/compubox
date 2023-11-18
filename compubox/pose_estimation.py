@@ -5,8 +5,8 @@ import torch
 def get_model(path):
     return YOLO(path)
 
-def predict(model, img):
-    results = model.track(img, show=True)
+def predict(model, img, show=False):
+    results = model.track(img, show=show)
     return results
 
 def flatten_results(results):
@@ -14,7 +14,6 @@ def flatten_results(results):
     for result in results:
         ids = result.boxes.id
         for i in range(len(ids)):
-            print(i)
             poses[ids[i].item()] = poses.get(ids[i].item(), []) + [torch.flatten(result.keypoints.xyn[i])]
     return poses
 
