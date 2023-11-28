@@ -25,8 +25,9 @@ if __name__ == '__main__':
         flat_results = flatten_results(result)
 
         for k in flat_results:
-            punch = str(input(f"Enter punch/defensive action for fighter with id {k}: "))
-            entry = {'poses': [i.tolist() for i in flat_results[k]], 'punch': punch}
-            dataset[i][k] = entry
+            punch = str(input(f"Enter punch/defensive action for fighter with id {k} (type in q if you wish to skip this video): "))
+            if punch != 'q':
+                entry = {'poses': [i.tolist() for i in flat_results[k]], 'punch': punch}
+                dataset[i][k] = entry
 
     json.dump(dataset, open(args.output_path, 'w+'))

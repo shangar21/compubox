@@ -18,7 +18,7 @@ from sklearn.model_selection import train_test_split
 import json
 import utils
 
-PUNCHES = ['1', '1b', '2', '2b', '3', '3b', '4', '4b', '5', '5b', '6', '6b', 'overhand']
+PUNCHES = ['1', '1b', '2', '2b', '3', '3b', '4', '4b', '5', '5b', '6', '6b', '7']
 DEFENSE = ['slip', 'roll', 'block']
 POSE_ESTIMATOR = get_model('yolov8m-pose.pt')
 
@@ -44,11 +44,32 @@ def gen_dataset(path, info_path='./clip_len.json'):
     )
     return X, y, info_path
 
+def gen_dataset_from_json(path, info_path='./clip_len.json'):
+    X = []
+    y = []
+    max_clip_len = 0
+    min_clip_len = float('inf')
+    data = json.load(open(path, 'r'))
+    for i in data:
+        for j in data[i]:
+            if data[i][j]['punch']:
+                X.append(torch.tensor(data[i][j]['poses']))
+                t = [0]*len(PUNCHES)
+                t[PUNCHES.index(data[i][j]['punch'])] = 1
+                y.append(t)
+                max_clip_len = max(max_clip_len, len(data[i][j]['punch']))
+                min_clip_len = min(min_clip_len, len(data[i][j]['punch']))
+    json.dump(
+        {"max_clip_len": max_clip_len, 'min_clip_len': min_clip_len},
+        open(info_path, 'w+')
+    )
+    return X, y, info_path
+
 def pad_and_reformat(X):
     max_len = max([len(i) for i in X])
     for i in range(len(X)):
         X[i] = torch.cat((X[i], torch.zeros(max_len - len(X[i]))))
-    return torch.cat(X).reshape(-1, max_len)
+    return X
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog="hitnet train cli", description="CLI for training hitnet")
@@ -67,7 +88,7 @@ if __name__ == '__main__':
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
     print("Generating dataset from path...")
-    X, y, info_path = gen_dataset(args.dataset_path)
+    X, y, info_path = gen_dataset_from_json(args.dataset_path)
 #    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=args.train_split, random_state=42)
     clip_info = json.load(open(info_path, 'r'))
     dimension = clip_info['max_clip_len']

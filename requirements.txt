@@ -1,7 +1,8 @@
-Pillow==9.0.1
-Pillow==10.1.0
-scikit_learn==1.3.2
-torchvision==0.15.2
-tqdm==4.65.0
-tqdm==4.66.1
-ultralytics==8.0.203
+opencv_python
+path.py
+Pillow
+scikit_learn
+torch
+torchvision
+tqdm
+ultralytics
