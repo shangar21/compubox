@@ -20,14 +20,12 @@ if __name__ == '__main__':
     dataset = {}
 
     for i in os.listdir(args.dataset_path):
-        dataset[i] = {}
-        result = predict(POSE_ESTIMATOR, f"{args.dataset_path}/{i}", show=True)
-        flat_results = flatten_results(result)
+        print(f"Entering directory {i}")
+        if os.path.isdir(f"{args.dataset_path}/{i}"):
+            for j in os.listdir(f"{args.dataset_path}/{i}"):
+                print(f"Processing file {j}")
+                result = predict(POSE_ESTIMATOR, f"{args.dataset_path}/{i}/{j}")
+                flat_results = flatten_results(result)[1]
+                dataset[f"{i}_{j}"] = {'punch': i, 'poses': [k.tolist() for k in flat_results]}
 
-        for k in flat_results:
-            punch = str(input(f"Enter punch/defensive action for fighter with id {k} (type in q if you wish to skip this video): "))
-            if punch != 'q':
-                entry = {'poses': [i.tolist() for i in flat_results[k]], 'punch': punch}
-                dataset[i][k] = entry
-
-    json.dump(dataset, open(args.output_path, 'w+'))
+    json.dump(dataset, open(args.output_path, 'w+'), indent=4)
