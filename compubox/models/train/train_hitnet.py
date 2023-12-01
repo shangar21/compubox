@@ -104,6 +104,13 @@ if __name__ == '__main__':
     torch.cuda.empty_cache()
     torch.save(net.state_dict(), args.output)
 
+    for i in tqdm(range(len(X_test))):
+        img = X_test[i]
+        img = utils.resize_with_padding(img, expected_size)
+        img = transforms.ToPILImage()(img)
+        img = transform(img)
+        img = img.unsqueeze(0)
+        X_test[i] = img
     print("Testing model...")
     accuracy = utils.accuracy(X_test, y_test, net, expected_size, device, verbose=False)
     print(f"Test accuracy: {accuracy}")
