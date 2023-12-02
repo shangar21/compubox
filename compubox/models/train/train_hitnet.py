@@ -72,8 +72,10 @@ if __name__ == '__main__':
     transforms.ToTensor(),
     ])
 
-
     running_loss = 0.0
+
+    loss_log = []
+    accuracy_log = [0]
 
     torch.cuda.empty_cache()
 
@@ -97,12 +99,13 @@ if __name__ == '__main__':
             loss.backward()
             optimizer.step()
             running_loss += loss
-        if epoch % args.loss_every == args.loss_every - 1:
-            print(f"Loss: {running_loss} \t\t Training accuracy: {utils.accuracy(X_train, y_train, net, expected_size, device, verbose=False)}")
-            running_loss = 0
-
-    torch.cuda.empty_cache()
-    torch.save(net.state_dict(), args.output)
+        loss_log.append(running_loss)
+        accuracy_log.append(utils.accuracy(X_train, y_train, net, expected_size, device, verbose=False))
+        if accuracy_log[-1] > max(accuracy_log[:-1]):
+            torch.save(net.state_dict(), args.output)
+        print(f"Loss: {running_loss} \t\t Training accuracy: {accuracy_log[-1]}")
+        running_loss = 0
+        torch.cuda.empty_cache()
 
     print("Testing model...")
     accuracy = utils.accuracy(X_test, y_test, net, expected_size, device, verbose=False)

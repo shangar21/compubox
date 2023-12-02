@@ -122,7 +122,7 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss()
 
     running_loss = 0.0
-
+    accuracy_log = [0]
     torch.cuda.empty_cache()
 
     optimizer = optim.Adam(net.parameters(), lr=args.learning_rate)
@@ -147,11 +147,12 @@ if __name__ == '__main__':
                 out = torch.argmax(output[i])
                 correct += 1 if torch.argmax(t[i]) == out else 0
                 total += 1
+        accuracy_log.append(correct/total)
+        if accuracy_log[-1] > max(accuracy_log[:-1]):
+            torch.save(net.state_dict(), args.output)
         print(f"Running Loss: {running_loss} \t\t\t Accuracy: {correct/total}")
+        torch.cuda.empty_cache()
 
-
-    torch.cuda.empty_cache()
-    torch.save(net.state_dict(), args.output)
 #
 #    print("Testing model...")
 #    accuracy = utils.accuracy(X_test, y_test, net, expected_size, device, verbose=False)

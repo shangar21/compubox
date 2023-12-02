@@ -20,7 +20,7 @@ def resize_with_padding(img, expected_size):
     return torch.nn.functional.pad(img, padding)
 
 # assume X_test and y_test are formatted correctly
-def accuracy(X_test, y_test, net, device, verbose=True):
+def accuracy(X_test, y_test, net, expected_size, device, threshold = lambda x: 1 if x > 0.5 else 0, verbose=True):
     correct = 0
     for i in tqdm(range(len(X_test)), disable=not verbose):
         img = X_test[i]
