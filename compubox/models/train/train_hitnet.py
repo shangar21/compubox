@@ -51,7 +51,7 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', nargs="?", default=100, type=int)
     parser.add_argument('--batch_size', nargs="?", default=5, type=int)
     parser.add_argument('--loss-every', nargs="?", default=1, type=int)
-    parser.add_argument('--output', '-o', nargs="?", default="Downloads/model.pth", type=str)
+    parser.add_argument('--output', '-o', nargs="?", default="model_hitnet.pth", type=str)
     args = parser.parse_args()
 
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')

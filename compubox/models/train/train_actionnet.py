@@ -143,10 +143,12 @@ if __name__ == '__main__':
         for x, label in train_loader:
             output = net(x.to(device))
             t = torch.tensor([y[i] for i in label]).to(torch.float).to(device)
-            output = torch.argmax(output)
-            correct += 1 if torch.argmax(t) == output else 0
-            total += 1
+            for i in range(len(output)):
+                out = torch.argmax(output[i])
+                correct += 1 if torch.argmax(t[i]) == out else 0
+                total += 1
         print(f"Running Loss: {running_loss} \t\t\t Accuracy: {correct/total}")
+
 
     torch.cuda.empty_cache()
     torch.save(net.state_dict(), args.output)
