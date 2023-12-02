@@ -51,7 +51,7 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', nargs="?", default=100, type=int)
     parser.add_argument('--batch_size', nargs="?", default=5, type=int)
     parser.add_argument('--loss-every', nargs="?", default=1, type=int)
-    parser.add_argument('--output', '-o', nargs="?", default="model_hitnet.pth", type=str)
+    parser.add_argument('--output', '-o', nargs="?", default="Downloads/model.pth", type=str)
     args = parser.parse_args()
 
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
@@ -84,7 +84,6 @@ if __name__ == '__main__':
         img = transform(img)
         img = img.unsqueeze(0)
         X_train[i] = img
-
     for epoch in range(args.epochs):
         optimizer = optim.Adam(net.parameters(), lr=args.learning_rate)#, momentum=args.momentum)
         print(f"Running epoch {epoch + 1}/{args.epochs}")
@@ -98,13 +97,19 @@ if __name__ == '__main__':
             optimizer.step()
             running_loss += loss
         if epoch % args.loss_every == args.loss_every - 1:
-            print(f"Loss: {running_loss} \t\t Training accuracy: {utils.accuracy(X_train, y_train, net, expected_size, device, verbose=False)}")
+            print(f"Loss: {running_loss} \t\t Training accuracy: {utils.accuracy(X_train, y_train, net, device, lambda x : 1 if x > 0.5 else 0, verbose=False)}")
             running_loss = 0
 
     torch.cuda.empty_cache()
     torch.save(net.state_dict(), args.output)
-
+    for i in tqdm(range(len(X_test))):
+        img = X_test[i]
+        img = utils.resize_with_padding(img, expected_size)
+        img = transforms.ToPILImage()(img)
+        img = transform(img)
+        img = img.unsqueeze(0)
+        X_test[i] = img
     print("Testing model...")
-    accuracy = utils.accuracy(X_test, y_test, net, expected_size, device, verbose=False)
+    accuracy = utils.accuracy(X_test, y_test, net, device, lambda x : 1 if x > 0.5 else 0, verbose=False)
     print(f"Test accuracy: {accuracy}")
 
