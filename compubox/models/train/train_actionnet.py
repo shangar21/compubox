@@ -153,18 +153,7 @@ if __name__ == '__main__':
         print(f"Running Loss: {running_loss} \t\t\t Accuracy: {correct/total}")
         torch.cuda.empty_cache()
 
-<<<<<<< HEAD
-
-    torch.cuda.empty_cache()
-    torch.save(net.state_dict(), args.output)
-
-    print("Testing model...")
-    accuracy = utils.accuracy(X_test, y_test, net, device, torch.argmax, verbose=False)
-    print(f"Test accuracy: {accuracy}")
-=======
-#
 #    print("Testing model...")
-#    accuracy = utils.accuracy(X_test, y_test, net, expected_size, device, verbose=False)
+#    accuracy = utils.accuracy(X_test, y_test, net, device, torch.argmax, verbose=False)
 #    print(f"Test accuracy: {accuracy}")
->>>>>>> main
 
