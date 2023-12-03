@@ -72,8 +72,10 @@ if __name__ == '__main__':
     transforms.ToTensor(),
     ])
 
-
     running_loss = 0.0
+
+    loss_log = []
+    accuracy_log = [0]
 
     torch.cuda.empty_cache()
 
@@ -84,6 +86,7 @@ if __name__ == '__main__':
         img = transform(img)
         img = img.unsqueeze(0)
         X_train[i] = img
+
     for epoch in range(args.epochs):
         optimizer = optim.Adam(net.parameters(), lr=args.learning_rate)#, momentum=args.momentum)
         print(f"Running epoch {epoch + 1}/{args.epochs}")
@@ -96,12 +99,20 @@ if __name__ == '__main__':
             loss.backward()
             optimizer.step()
             running_loss += loss
-        if epoch % args.loss_every == args.loss_every - 1:
-            print(f"Loss: {running_loss} \t\t Training accuracy: {utils.accuracy(X_train, y_train, net, device, lambda x : 1 if x > 0.5 else 0, verbose=False)}")
-            running_loss = 0
+        loss_log.append(running_loss)
+        accuracy_log.append(utils.accuracy(X_train,
+                                           y_train,
+                                           net,
+                                           device,
+                                           lambda x: 1 if x > 0.5 else 0,
+                                           verbose=False)
+                            )
+        if accuracy_log[-1] > max(accuracy_log[:-1]):
+            torch.save(net.state_dict(), args.output)
+        print(f"Loss: {running_loss} \t\t Training accuracy: {accuracy_log[-1]}")
+        running_loss = 0
+        torch.cuda.empty_cache()
 
-    torch.cuda.empty_cache()
-    torch.save(net.state_dict(), args.output)
     for i in tqdm(range(len(X_test))):
         img = X_test[i]
         img = utils.resize_with_padding(img, expected_size)
@@ -109,6 +120,7 @@ if __name__ == '__main__':
         img = transform(img)
         img = img.unsqueeze(0)
         X_test[i] = img
+
     print("Testing model...")
     accuracy = utils.accuracy(X_test, y_test, net, device, lambda x : 1 if x > 0.5 else 0, verbose=False)
     print(f"Test accuracy: {accuracy}")
