@@ -108,14 +108,19 @@ if __name__ == '__main__':
 
     print("Generating dataset from path...")
     X, y, info_path = gen_dataset_from_json(args.dataset_path)
+
     clip_info = json.load(open(info_path, 'r'))
     dimension = clip_info['max_clip_len']
     input_size = len(X[0][0])
 
     pad_sequence(X, dimension, input_size)
-    dataset = Dataset(list(range(len(X))), y, X)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42, train_size=args.train_split)
 
-    train_loader = torch.utils.data.DataLoader(dataset, batch_size=10, shuffle=True, drop_last=True)
+    train_dataset = Dataset(list(range(len(X_train))), y_train, X_train)
+    test_dataset = Dataset(list(range(len(X_test))), y_test, X_test)
+
+    train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=10, shuffle=True, drop_last=True)
+    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=1, shuffle=True, drop_last=True)
 
     net = ActionNet(hidden_size=dimension, input_size=input_size, num_actions=len(PUNCHES))
     net.to(device)
@@ -133,7 +138,7 @@ if __name__ == '__main__':
         for x, label in tqdm(train_loader):
             optimizer.zero_grad()
             output = net(x.to(device))
-            t = torch.tensor([y[i] for i in label]).to(torch.float).to(device)
+            t = torch.tensor([y_train[i] for i in label]).to(torch.float).to(device)
             loss = criterion(output, t)
             loss.backward()
             optimizer.step()
@@ -142,7 +147,7 @@ if __name__ == '__main__':
         total = 0
         for x, label in train_loader:
             output = net(x.to(device))
-            t = torch.tensor([y[i] for i in label]).to(torch.float).to(device)
+            t = torch.tensor([y_train[i] for i in label]).to(torch.float).to(device)
             for i in range(len(output)):
                 out = torch.argmax(output[i])
                 correct += 1 if torch.argmax(t[i]) == out else 0
@@ -153,8 +158,13 @@ if __name__ == '__main__':
         print(f"Running Loss: {running_loss} \t\t\t Accuracy: {correct/total}")
         torch.cuda.empty_cache()
 
-#
-#    print("Testing model...")
-#    accuracy = utils.accuracy(X_test, y_test, net, expected_size, device, verbose=False)
-#    print(f"Test accuracy: {accuracy}")
+    print("Testing model...")
+    for x, label in test_loader:
+        output = net(x.to(device))
+        t = torch.tensor([y_test[i] for i in label]).to(torch.float).to(device)
+        for i in range(len(output)):
+            out = torch.argmax(output[i])
+            correct += 1 if torch.argmax(t[i]) == out else 0
+            total += 1
+    print(f"Test accuracy: {correct/total}")
 
