@@ -11,11 +11,7 @@ pip install -r requirements.txt
 ```bash
 python main.py -p /path/to/videos -o /path/to/output
 ```
-This will iterate thru each video, find all the punches thrown and list the hits landed and output a JSON file with the results. A sample with one person throwing one punch:
-
-```
-{"20231128_042445000_iOS.MOV": {"punches": ["1"], "hit": false}}
-```
+This will iterate thru each video, find all the punches thrown and list the hits landed and output a JSON file with the results. 
 
 ## To train
 
@@ -72,3 +68,21 @@ This will output a file `dataset.json` into the root of the compubox directory. 
 ```bash
 python3 compubox/models/train/train_actionnet.py --dataset-path ./dataset.json --epochs <num empochs> --learning_rate <desired learning rate>
 ```
+
+## Samples
+A sample with one person throwing one punch:
+
+
+```
+{"20231128_042445000_iOS.MOV": {"punches": ["1"], "hit": false}}
+```
+
+
+https://github.com/shangar21/compubox/assets/56494763/85612571-4b61-4bfc-bcd0-431b441d1570
+
+
+
+
+
+
+
