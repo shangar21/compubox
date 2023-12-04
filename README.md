@@ -11,7 +11,11 @@ pip install -r requirements.txt
 ```bash
 python main.py -p /path/to/videos -o /path/to/output
 ```
-This will iterate thru each video, find all the punches thrown and list the hits landed and output a JSON file with the results.
+This will iterate thru each video, find all the punches thrown and list the hits landed and output a JSON file with the results. A sample with one person throwing one punch:
+
+```
+{"20231128_042445000_iOS.MOV": {"punches": ["1"], "hit": false}}
+```
 
 ## To train
 
