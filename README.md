@@ -9,8 +9,9 @@ pip install -r requirements.txt
 ## To run
 
 ```bash
-python main.py
+python main.py -p /path/to/videos -o /path/to/output
 ```
+This will iterate thru each video, find all the punches thrown and list the hits landed and output a JSON file with the results.
 
 ## To train
 
