@@ -1,5 +1,10 @@
+import sys
+import path
+import os
+directory = path.Path(__file__).abspath()
+sys.path.append(directory.parent.parent)
 from ultralytics import YOLO
-from models.train import utils
+from .models.train import utils
 import torch
 
 def get_model(path):
