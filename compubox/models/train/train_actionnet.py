@@ -158,6 +158,9 @@ if __name__ == '__main__':
         print(f"Running Loss: {running_loss} \t\t\t Accuracy: {correct/total}")
         torch.cuda.empty_cache()
 
+    #net = ActionNet(hidden_size=dimension, input_size=input_size, num_actions=len(PUNCHES))
+    #net = net.load_state_dict(torch.load(args.output))
+
     print("Testing model...")
     for x, label in test_loader:
         output = net(x.to(device))
