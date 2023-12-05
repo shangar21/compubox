@@ -46,21 +46,16 @@ if __name__ == '__main__':
     for i in os.listdir(args.path):
         poses = pose_estimation.predict(pose_model, f"{args.path}/{i}")
         flat_poses = pose_estimation.flatten_results(poses)
+        fist_frames = pose_estimation.get_fist_frames(poses)
+        results[i] = {}
         for k in flat_poses:
+            results[i][k] = {}
             X = flat_poses[k]
             X = torch.stack(X)
             punches = rnn.predict(X)
-
-        frames = utils.extract_frames(f"{args.path}/{i}")
-
-        sliced_frames = []
-        target = partial(get_nxm_slices, frames[0].shape[0]//5, frames[0].shape[1]//5, sliced_frames)
-        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
-            executor.map(target, frames)
-
-        hit = 1 in punch_pred.predict(sliced_frames)
-
-        results[i] = {"punches": punches, "hit": hit}
+            results[i][k]['punches'] = punches
+            hit = 1 in punch_pred.predict(fist_frames[k])
+            results[i][k]['landed'] = hit
 
     json.dump(results, open(args.output, 'w+'))
 
