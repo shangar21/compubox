@@ -74,7 +74,7 @@ A sample with one person throwing one punch:
 
 
 ```
-{"20231128_042445000_iOS.MOV": {"punches": ["1"], "hit": false}}
+{"20231128_042445000_iOS.MOV": {"1.0": {"punches": ["1"], "landed": false}}}
 ```
 
 
