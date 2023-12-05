@@ -18,7 +18,7 @@ def pad_and_reformat(X):
 
 def pad_sequence(X, max_clip_len, input_size):
     if len(X) < max_clip_len:
-        X = torch.cat((X, torch.zeros(max_clip_len - len(X), input_size)))
+        X = torch.cat((X, torch.zeros(max_clip_len - len(X), input_size).to(X.device)))
 
 class Dataset(torch.utils.data.Dataset):
     def __init__(self, list_IDs, labels, data):
