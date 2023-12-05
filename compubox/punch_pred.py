@@ -31,17 +31,17 @@ def predict(X, model_path="./hitnet_model.pth"):
     net.load_state_dict(torch.load(model_path, map_location=device))
     net.eval()
     net.to(device)
-    hits = []
 
     dataset = ImageDataset(X, transform)
-    data_loader = torch.utils.data.DataLoader(dataset, batch_size=64)
+    data_loader = torch.utils.data.DataLoader(dataset, batch_size=10)
 
     hits = []
 
-    for x, _ in tqdm(data_loader):
-        output = net(x.to(device))
-        for i in output:
-            hits.append(i)
+    with torch.no_grad():
+        for x, _ in tqdm(data_loader):
+            output = net(x.to(device))
+            for i in output:
+                hits.append(i)
 
     return hits
 

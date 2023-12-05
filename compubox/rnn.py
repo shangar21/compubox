@@ -46,6 +46,7 @@ def predict(X, info_path="./clip_len.json", model_path="./actionnet_model.pth"):
     net.to(device)
     punches = []
     X = torch.stack([X])
-    output = net(X.to(device))
-    punches.append(PUNCHES[torch.argmax(output)])
+    with torch.no_grad():
+        output = net(X.to(device))
+        punches.append(PUNCHES[torch.argmax(output)])
     return punches
