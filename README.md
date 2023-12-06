@@ -13,6 +13,12 @@ python main.py -p /path/to/videos -o /path/to/output
 ```
 This will iterate thru each video, find all the punches thrown and list the hits landed and output a JSON file with the results. 
 
+There is also a set of sample videos in this directory, to run an inference on those, simply run:
+
+```bash
+python main.py -p ./samples/dataset
+```
+
 ## To train
 
 Since there are multiple models at play here, you need multiple datasets to train. Will explain the formatting of each in the following sections. 
@@ -79,6 +85,65 @@ A sample with one person throwing one punch:
 
 
 https://github.com/shangar21/compubox/assets/56494763/85612571-4b61-4bfc-bcd0-431b441d1570
+
+The output when running on the sample in this repository:
+
+```
+{
+   "cross_hook.mp4":{
+      "1.0":{
+         "punches":[
+            "2"
+         ],
+         "landed":false
+      },
+      "2.0":{
+         "punches":[
+            "2"
+         ],
+         "landed":false
+      }
+   },
+   "20231128_043330000_iOS.MOV":{
+      "1.0":{
+         "punches":[
+            "2"
+         ],
+         "landed":false
+      }
+   },
+   "20231128_044321000_iOS.MOV":{
+      "1.0":{
+         "punches":[
+            "3"
+         ],
+         "landed":false
+      }
+   },
+   "jab_cross.mp4":{
+      "1.0":{
+         "punches":[
+            "2"
+         ],
+         "landed":false
+      },
+      "2.0":{
+         "punches":[
+            "2"
+         ],
+         "landed":false
+      }
+   },
+   "20231128_042445000_iOS.MOV":{
+      "1.0":{
+         "punches":[
+            "2"
+         ],
+         "landed":false
+      }
+   }
+}
+```
 
 
 
