@@ -4,7 +4,10 @@ import os
 directory = path.Path(__file__).abspath()
 sys.path.append(directory.parent.parent)
 from ultralytics import YOLO
-from .models.train import utils
+try:
+    from .models.train import utils
+except:
+    from models.train import utils
 import torch
 import matplotlib.pyplot as plt
 
