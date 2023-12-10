@@ -40,6 +40,8 @@ def predict(X, model_path="./hitnet_model.pth"):
     with torch.no_grad():
         for x, _ in tqdm(data_loader):
             output = net(x.to(device))
+            output = torch.sigmoid(output)
+            output = torch.round(output)
             for i in output:
                 hits.append(i)
 
