@@ -132,31 +132,31 @@ if __name__ == '__main__':
 
     optimizer = optim.Adam(net.parameters(), lr=args.learning_rate)
 
-    #for epoch in range(args.epochs):
-    #    print(f"Running epoch {epoch + 1}/{args.epochs}")
-    #    running_loss = 0
-    #    for x, label in tqdm(train_loader):
-    #        optimizer.zero_grad()
-    #        output = net(x.to(device))
-    #        t = torch.tensor([y_train[i] for i in label]).to(torch.float).to(device)
-    #        loss = criterion(output, t)
-    #        loss.backward()
-    #        optimizer.step()
-    #        running_loss += loss
-    #    correct = 0
-    #    total = 0
-    #    for x, label in train_loader:
-    #        output = net(x.to(device))
-    #        t = torch.tensor([y_train[i] for i in label]).to(torch.float).to(device)
-    #        for i in range(len(output)):
-    #            out = torch.argmax(output[i])
-    #            correct += 1 if torch.argmax(t[i]) == out else 0
-    #            total += 1
-    #    accuracy_log.append(correct/total)
-    #    if accuracy_log[-1] > max(accuracy_log[:-1]):
-    #        torch.save(net.state_dict(), args.output)
-    #    print(f"Running Loss: {running_loss} \t\t\t Accuracy: {correct/total}")
-    #    torch.cuda.empty_cache()
+    for epoch in range(args.epochs):
+        print(f"Running epoch {epoch + 1}/{args.epochs}")
+        running_loss = 0
+        for x, label in tqdm(train_loader):
+            optimizer.zero_grad()
+            output = net(x.to(device))
+            t = torch.tensor([y_train[i] for i in label]).to(torch.float).to(device)
+            loss = criterion(output, t)
+            loss.backward()
+            optimizer.step()
+            running_loss += loss
+        correct = 0
+        total = 0
+        for x, label in train_loader:
+            output = net(x.to(device))
+            t = torch.tensor([y_train[i] for i in label]).to(torch.float).to(device)
+            for i in range(len(output)):
+                out = torch.argmax(output[i])
+                correct += 1 if torch.argmax(t[i]) == out else 0
+                total += 1
+        accuracy_log.append(correct/total)
+        if accuracy_log[-1] > max(accuracy_log[:-1]):
+            torch.save(net.state_dict(), args.output)
+        print(f"Running Loss: {running_loss} \t\t\t Accuracy: {correct/total}")
+        torch.cuda.empty_cache()
 
     net = ActionNet(hidden_size=dimension, input_size=input_size, num_actions=len(PUNCHES))
     net.to(device)
