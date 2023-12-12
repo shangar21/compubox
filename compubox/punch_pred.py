@@ -29,7 +29,6 @@ def predict(X, model_path="./hitnet_model.pth"):
     ])
     net = HitNet()
     net.load_state_dict(torch.load(model_path, map_location=device))
-    net.eval()
     net.to(device)
 
     dataset = ImageDataset(X, transform)

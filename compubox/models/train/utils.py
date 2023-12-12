@@ -22,13 +22,15 @@ def resize_with_padding(img, expected_size):
 # assume X_test and y_test are formatted correctly
 def accuracy(X_test, y_test, net, device, func, verbose=True):
     correct = 0
+    preds = []
     for i in tqdm(range(len(X_test)), disable=not verbose):
         img = X_test[i]
         output = net(img.to(device))
+        preds.append(func(output))
         correct += 1 if func(output) == func(y_test[i]) else 0
     if verbose:
         print(correct/len(X_test))
-    return correct / len(X_test)
+    return correct / len(X_test), preds
 
 def extract_frames(vid_path, save=''):
 	vid = cv2.VideoCapture(vid_path)

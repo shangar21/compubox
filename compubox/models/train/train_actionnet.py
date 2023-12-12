@@ -17,6 +17,7 @@ from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 import json
 import utils
+from sklearn.metrics import confusion_matrix
 
 
 #PUNCHES = ['1', '1b', '2', '2b', '3', '3b', '4', '4b', '5', '5b', '6', '6b', '7']
@@ -132,31 +133,31 @@ if __name__ == '__main__':
 
     optimizer = optim.Adam(net.parameters(), lr=args.learning_rate)
 
-    for epoch in range(args.epochs):
-        print(f"Running epoch {epoch + 1}/{args.epochs}")
-        running_loss = 0
-        for x, label in tqdm(train_loader):
-            optimizer.zero_grad()
-            output = net(x.to(device))
-            t = torch.tensor([y_train[i] for i in label]).to(torch.float).to(device)
-            loss = criterion(output, t)
-            loss.backward()
-            optimizer.step()
-            running_loss += loss
-        correct = 0
-        total = 0
-        for x, label in train_loader:
-            output = net(x.to(device))
-            t = torch.tensor([y_train[i] for i in label]).to(torch.float).to(device)
-            for i in range(len(output)):
-                out = torch.argmax(output[i])
-                correct += 1 if torch.argmax(t[i]) == out else 0
-                total += 1
-        accuracy_log.append(correct/total)
-        if accuracy_log[-1] > max(accuracy_log[:-1]):
-            torch.save(net.state_dict(), args.output)
-        print(f"Running Loss: {running_loss} \t\t\t Accuracy: {correct/total}")
-        torch.cuda.empty_cache()
+    #for epoch in range(args.epochs):
+    #    print(f"Running epoch {epoch + 1}/{args.epochs}")
+    #    running_loss = 0
+    #    for x, label in tqdm(train_loader):
+    #        optimizer.zero_grad()
+    #        output = net(x.to(device))
+    #        t = torch.tensor([y_train[i] for i in label]).to(torch.float).to(device)
+    #        loss = criterion(output, t)
+    #        loss.backward()
+    #        optimizer.step()
+    #        running_loss += loss
+    #    correct = 0
+    #    total = 0
+    #    for x, label in train_loader:
+    #        output = net(x.to(device))
+    #        t = torch.tensor([y_train[i] for i in label]).to(torch.float).to(device)
+    #        for i in range(len(output)):
+    #            out = torch.argmax(output[i])
+    #            correct += 1 if torch.argmax(t[i]) == out else 0
+    #            total += 1
+    #    accuracy_log.append(correct/total)
+    #    if accuracy_log[-1] > max(accuracy_log[:-1]):
+    #        torch.save(net.state_dict(), args.output)
+    #    print(f"Running Loss: {running_loss} \t\t\t Accuracy: {correct/total}")
+    #    torch.cuda.empty_cache()
 
     net = ActionNet(hidden_size=dimension, input_size=input_size, num_actions=len(PUNCHES))
     net.to(device)
@@ -165,6 +166,8 @@ if __name__ == '__main__':
 
     correct = 0
     total = 0
+    preds = []
+    true = []
     print("Testing model...")
     for x, label in test_loader:
         output = net(x.to(device))
@@ -173,7 +176,10 @@ if __name__ == '__main__':
         print("Correct answer: ", t)
         for i in range(len(output)):
             out = torch.argmax(output[i])
+            preds.append(out.to('cpu').item())
+            true.append(torch.argmax(t[i]).to('cpu').item())
             correct += 1 if torch.argmax(t[i]) == out else 0
             total += 1
+    print(confusion_matrix(true, preds))
     print(f"Test accuracy: {correct/total}")
 

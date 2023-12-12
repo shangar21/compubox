@@ -25,6 +25,8 @@ import json
 
 import utils
 
+from sklearn.metrics import confusion_matrix
+
 def gen_dataset(path, hit, miss):
     X = []
     y = []
@@ -105,10 +107,9 @@ if __name__ == '__main__':
                                            net,
                                            device,
                                            lambda x: 1 if x > 0.5 else 0,
-                                           verbose=False)
+                                           verbose=False)[0]
                             )
-        if accuracy_log[-1] > max(accuracy_log[:-1]):
-            torch.save(net.state_dict(), args.output)
+        torch.save(net.state_dict(), args.output)
         print(f"Loss: {running_loss} \t\t Training accuracy: {accuracy_log[-1]}")
         running_loss = 0
         torch.cuda.empty_cache()
@@ -121,7 +122,13 @@ if __name__ == '__main__':
         img = img.unsqueeze(0)
         X_test[i] = img
 
+    net = HitNet()
+    net.to(device)
+    net.load_state_dict(torch.load(args.output))
+#    net.eval()
+
     print("Testing model...")
-    accuracy = utils.accuracy(X_test, y_test, net, device, lambda x : 1 if x > 0.5 else 0, verbose=False)
+    accuracy, preds = utils.accuracy(X_test, y_test, net, device, lambda x : 1 if x > 0.5 else 0, verbose=False)
+    print(confusion_matrix(y_test, preds))
     print(f"Test accuracy: {accuracy}")
 
