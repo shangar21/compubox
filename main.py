@@ -54,10 +54,11 @@ if __name__ == '__main__':
             X = torch.stack(X)
             punches = rnn.predict(X)
             results[i][k]['punches'] = punches
-            hits = punch_pred.predict(fist_frames[k])
-            hits = [i.item() for i in hits]
-            hit = 1 in hits
-            results[i][k]['landed'] = hit
+            if len(flat_poses) > 1:
+                hits = punch_pred.predict(fist_frames[k])
+                hits = [i.item() for i in hits]
+                hit = 1 in hits
+                results[i][k]['landed'] = hit
 
     json.dump(results, open(args.output, 'w+'))
 
