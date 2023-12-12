@@ -12,6 +12,12 @@ One can also download the pretrained networks here:
 
 [HitNet](https://shangar.ddns.net/media/pretrained_models/hitnet_model.pth)
 
+One can download the dataset used here:
+
+[ActionNet](https://shangar.ddns.net/media/datasets/Boxing_clips.tar.gz)
+
+[HitNet](https://shangar.ddns.net/media/datasets/punch_imgs_cropped.tar.gz)
+
 ## To run
 
 After downloading the pretrained models and moving them into the compubox directory, one can run
@@ -103,29 +109,27 @@ The output when running on the sample in this repository:
          "punches":[
             "2"
          ],
-         "landed":false
+         "landed":true
       },
       "2.0":{
          "punches":[
             "2"
          ],
-         "landed":false
+         "landed":true
       }
    },
    "20231128_043330000_iOS.MOV":{
       "1.0":{
          "punches":[
             "2"
-         ],
-         "landed":false
+         ]
       }
    },
    "20231128_044321000_iOS.MOV":{
       "1.0":{
          "punches":[
             "3"
-         ],
-         "landed":false
+         ]
       }
    },
    "jab_cross.mp4":{
@@ -133,21 +137,20 @@ The output when running on the sample in this repository:
          "punches":[
             "2"
          ],
-         "landed":false
+         "landed":true
       },
       "2.0":{
          "punches":[
             "2"
          ],
-         "landed":false
+         "landed":true
       }
    },
    "20231128_042445000_iOS.MOV":{
       "1.0":{
          "punches":[
             "2"
-         ],
-         "landed":false
+         ]
       }
    }
 }
