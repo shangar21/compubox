@@ -103,29 +103,27 @@ The output when running on the sample in this repository:
          "punches":[
             "2"
          ],
-         "landed":false
+         "landed":true
       },
       "2.0":{
          "punches":[
             "2"
          ],
-         "landed":false
+         "landed":true
       }
    },
    "20231128_043330000_iOS.MOV":{
       "1.0":{
          "punches":[
             "2"
-         ],
-         "landed":false
+         ]
       }
    },
    "20231128_044321000_iOS.MOV":{
       "1.0":{
          "punches":[
             "3"
-         ],
-         "landed":false
+         ]
       }
    },
    "jab_cross.mp4":{
@@ -133,21 +131,20 @@ The output when running on the sample in this repository:
          "punches":[
             "2"
          ],
-         "landed":false
+         "landed":true
       },
       "2.0":{
          "punches":[
             "2"
          ],
-         "landed":false
+         "landed":true
       }
    },
    "20231128_042445000_iOS.MOV":{
       "1.0":{
          "punches":[
             "2"
-         ],
-         "landed":false
+         ]
       }
    }
 }
