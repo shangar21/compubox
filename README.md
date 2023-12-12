@@ -15,7 +15,8 @@ One can also download the pretrained networks here:
 One can download the dataset used here:
 
 [ActionNet](https://shangar.ddns.net/media/datasets/Boxing_clips.tar.gz)
-[ActionNet](https://shangar.ddns.net/media/datasets/punch_imgs_cropped.tar.gz)
+
+[HitNet](https://shangar.ddns.net/media/datasets/punch_imgs_cropped.tar.gz)
 
 ## To run
 
