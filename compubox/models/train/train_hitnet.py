@@ -26,6 +26,7 @@ import json
 import utils
 
 from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
 
 def gen_dataset(path, hit, miss):
     X = []
@@ -130,5 +131,6 @@ if __name__ == '__main__':
     print("Testing model...")
     accuracy, preds = utils.accuracy(X_test, y_test, net, device, lambda x : 1 if x > 0.5 else 0, verbose=False)
     print(confusion_matrix(y_test, preds))
+    print(classification_report(y_test, preds))
     print(f"Test accuracy: {accuracy}")
 
