@@ -6,7 +6,15 @@
 pip install -r requirements.txt
 ```
 
+One can also download the pretrained networks here:
+
+[ActionNet](https://shangar.ddns.net/media/pretrained_models/actionnet_model.pth)
+
+[HitNet](https://shangar.ddns.net/media/pretrained_models/hitnet_model.pth)
+
 ## To run
+
+After downloading the pretrained models and moving them into the compubox directory, one can run
 
 ```bash
 python main.py -p /path/to/videos -o /path/to/output
