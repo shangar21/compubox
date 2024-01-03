@@ -4,6 +4,9 @@ import torch
 import torchvision.transforms as transforms
 import torchvision.models as models
 from PIL import Image
+import ssl
+
+ssl._create_default_https_context = ssl._create_unverified_context
 
 class HitNet(nn.Module):
     def __init__(self, num_classes=1, weights=True):
